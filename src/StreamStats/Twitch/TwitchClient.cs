@@ -18,14 +18,23 @@ namespace StreamStats.Twitch
             _client.DefaultRequestHeaders.Add("Client-ID", clientId);
         }
 
-        public TwitchStream GetStreamInfo(string streamName)
+        public TwitchStream GetStreamDetails(string streamName)
         {
+            if (string.IsNullOrEmpty(streamName)) throw new ArgumentNullException(nameof(streamName));
+
             var response = _client.GetAsync($"streams/{streamName}").Result;
-            response.EnsureSuccessStatusCode();
+            try
+            {
+                response.EnsureSuccessStatusCode();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
 
             var body = response.Content.ReadAsStringAsync().Result;
-
-            return JsonConvert.DeserializeObject<TwitchStream>(body);
+            var result = JsonConvert.DeserializeObject<TwitchStream>(body);
+            return result;
         }
     }
 }
