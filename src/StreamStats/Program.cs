@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using Newtonsoft.Json;
 using StreamStats.Discord;
@@ -28,12 +29,13 @@ namespace StreamStats
 
             _streamChecker = new StreamChecker(twitchClient, discordClient);
 
-            CheckStreams(_streamChecker);
-
-            if (args != null)
+            if (args.Any())
             {
-                if (args[0].ToLower().Equals("-single"))
+                if (args.First().ToLower().Equals("-single"))
+                {
+                    CheckStreams(_streamChecker);
                     return;
+                }
             }
             else
             {
@@ -43,6 +45,8 @@ namespace StreamStats
                 {
                     Console.WriteLine($"\t{line}");
                 }
+                Console.WriteLine("Press Q to quit.");
+                CheckStreams(_streamChecker);
 
                 _timer = new Timer(TimerCallback, null, 60000, Timeout.Infinite);
                 while (Console.ReadKey().Key != ConsoleKey.Q) { }
@@ -60,7 +64,7 @@ namespace StreamStats
             foreach (var line in File.ReadAllLines("twitchusers.txt"))
             {
                 Console.WriteLine($"{DateTime.Now} Checking {line}");
-                var filename = $"data\\{line}_info.json";
+                var filename = Path.Combine("data", $"{line}_info.json");
 
                 var streamInfo = new StreamInfo();
 
