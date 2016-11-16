@@ -41,9 +41,11 @@ namespace StreamStats
             else if (!streamInfo.Online && (twitchStream.stream != null)) //Was offline, now online
             {
                 _logger.Log("\tStream is now registered as online");
+                var name = streamInfo.Name;
                 streamInfo = new StreamInfo
                 {
                     Online = true,
+                    Name = name,
                     FollowersStart = twitchStream.stream.channel.followers,
                     StreamStart = twitchStream.stream.created_at
                 };
