@@ -245,3 +245,6 @@ ModelManifest.xml
 
 # Own defines
 data/
+twitchusers.txt
+twitch.json
+discord.json
