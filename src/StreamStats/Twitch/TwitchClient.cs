@@ -2,16 +2,19 @@
 using System.Net.Http;
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
+using StreamStats.Logging;
 using StreamStats.Models;
 
 namespace StreamStats.Twitch
 {
     public class TwitchClient
     {
+        private readonly ILogger _logger;
         private readonly HttpClient _client;
 
-        public TwitchClient(string clientId)
+        public TwitchClient(string clientId, ILogger logger)
         {
+            _logger = logger;
             _client = new HttpClient { BaseAddress = new Uri("https://api.twitch.tv/kraken/") };
             _client.DefaultRequestHeaders.Accept.Clear();
             _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.twitchtv.v3+json"));

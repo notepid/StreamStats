@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using Newtonsoft.Json;
 using StreamStats.Discord;
+using StreamStats.Logging;
 using StreamStats.Models;
 using StreamStats.Twitch;
 
@@ -13,48 +14,59 @@ namespace StreamStats
     {
         private static StreamChecker _streamChecker;
         private static Timer _timer;
+        private static FileLogger _logger;
 
         public static void Main(string[] args)
         {
-            var discordmodel = JsonConvert.DeserializeObject<DiscordModel>(File.ReadAllText(@"discord.json"));
-            var twitchModel = JsonConvert.DeserializeObject<TwitchClientModel>(File.ReadAllText(@"twitch.json"));
+            _logger = new FileLogger("streamstats.log", new ConsoleLogger()); ;
 
-            var discordClient = new DiscordClient(discordmodel.WebhookUrl);
-            var twitchClient = new TwitchClient(twitchModel.ClientId);
-
-            if (!Directory.Exists("data"))
+            try
             {
-                Directory.CreateDirectory("data");
-            }
+                var discordmodel = JsonConvert.DeserializeObject<DiscordModel>(File.ReadAllText(@"discord.json"));
+                var twitchModel = JsonConvert.DeserializeObject<TwitchClientModel>(File.ReadAllText(@"twitch.json"));
 
-            _streamChecker = new StreamChecker(twitchClient, discordClient);
+                var discordClient = new DiscordClient(discordmodel.WebhookUrl, _logger);
+                var twitchClient = new TwitchClient(twitchModel.ClientId, _logger);
 
-            if (args.Any())
-            {
-                if (args.First().ToLower().Equals("-single"))
+                if (!Directory.Exists("data"))
                 {
+                    Directory.CreateDirectory("data");
+                }
+
+                _streamChecker = new StreamChecker(twitchClient, discordClient, _logger);
+
+                if (args.Any())
+                {
+                    if (args.First().ToLower().Equals("-single"))
+                    {
+                        CheckStreams(_streamChecker);
+                        return;
+                    }
+                }
+                else
+                {
+                    _logger.Log("Starting monitoring streams for stats:");
+
+                    foreach (var line in File.ReadAllLines("twitchusers.txt"))
+                    {
+                        _logger.Log($"\t{line}");
+                    }
+                    _logger.Log("Press Q to quit.");
                     CheckStreams(_streamChecker);
-                    return;
+
+                    _timer = new Timer(TimerCallback, null, 60000, Timeout.Infinite);
+                    while (Console.ReadKey().Key != ConsoleKey.Q) { }
                 }
             }
-            else
+            catch (Exception ex)
             {
-                Console.WriteLine("Starting monitoring streams for stats:");
-
-                foreach (var line in File.ReadAllLines("twitchusers.txt"))
-                {
-                    Console.WriteLine($"\t{line}");
-                }
-                Console.WriteLine("Press Q to quit.");
-                CheckStreams(_streamChecker);
-
-                _timer = new Timer(TimerCallback, null, 60000, Timeout.Infinite);
-                while (Console.ReadKey().Key != ConsoleKey.Q) { }
+                _logger.Log(ex);
             }
         }
 
         private static void TimerCallback(object state)
         {
+            Console.WriteLine(); //Deliberately not using _logger here
             CheckStreams(_streamChecker);
             _timer.Change(60000, Timeout.Infinite);
         }
@@ -63,7 +75,7 @@ namespace StreamStats
         {
             foreach (var line in File.ReadAllLines("twitchusers.txt"))
             {
-                Console.WriteLine($"{DateTime.Now} Checking {line}");
+                _logger.Log($"{DateTime.Now} Checking {line}");
                 var filename = Path.Combine("data", $"{line}_info.json");
 
                 var streamInfo = new StreamInfo();

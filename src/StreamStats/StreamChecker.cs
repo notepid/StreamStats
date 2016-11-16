@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using StreamStats.Discord;
+using StreamStats.Logging;
 using StreamStats.Models;
 using StreamStats.Twitch;
 
@@ -10,11 +11,13 @@ namespace StreamStats
     {
         private readonly TwitchClient _twitchClient;
         private readonly DiscordClient _discordClient;
+        private readonly ILogger _logger;
 
-        public StreamChecker(TwitchClient twitchClient, DiscordClient discordClient)
+        public StreamChecker(TwitchClient twitchClient, DiscordClient discordClient, ILogger logger)
         {
             _twitchClient = twitchClient;
             _discordClient = discordClient;
+            _logger = logger;
         }
 
         public StreamInfo CheckStream(StreamInfo streamInfo)
@@ -22,7 +25,7 @@ namespace StreamStats
             var twitchStream = _twitchClient.GetStreamDetails(streamInfo.Name);
             if (twitchStream == null)
             {
-                Console.WriteLine($"Unable to fetch API data for {streamInfo.Name}");
+                _logger.Log($"Unable to fetch API data for {streamInfo.Name}");
                 return streamInfo;
             }
 
@@ -30,14 +33,14 @@ namespace StreamStats
 
             if (streamInfo.Online && (twitchStream.stream == null)) //Was online, now offline
             {
-                Console.WriteLine("\tStream is now registered as offline");
+                _logger.Log("\tStream is now registered as offline");
                 streamInfo.Online = false;
 
                 AnnounceStreamOffline(streamInfo);
             }
             else if (!streamInfo.Online && (twitchStream.stream != null)) //Was offline, now online
             {
-                Console.WriteLine("\tStream is now registered as online");
+                _logger.Log("\tStream is now registered as online");
                 streamInfo = new StreamInfo
                 {
                     Online = true,
