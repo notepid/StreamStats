@@ -66,28 +66,28 @@ namespace StreamStats
 
         private void AnnounceStreamOnline(StreamInfo streamInfo, TwitchStream twitchStream)
         {
-            var message = $"@everyone {streamInfo.Name} is now live! {twitchStream.stream.channel.url}";
+            var message = $"@everyone ***{streamInfo.Name}*** is now live! {twitchStream.stream.channel.url}";
             _discordClient.SendTextMessage(message);
         }
 
         private void AnnounceStreamOffline(StreamInfo streamInfo)
         {
             var message = $"{streamInfo.Name} is done streaming and here are some stats.\n" +
-                                          $"Title: {streamInfo.Title}\n";
+                                          $"Title: **{streamInfo.Title}**\n";
 
             if (streamInfo.GamesPlayed.Count > 1)
             {
-                message += $"Games: {streamInfo.GamesPlayed.Aggregate(message, (current, game) => current + $"{game} ")}\n";
+                message += $"Games: {streamInfo.GamesPlayed.Aggregate(message, (current, game) => current + $"**{game}** ")}\n";
             }
             else if (streamInfo.GamesPlayed.Count == 1)
             {
-                message += $"Games: {streamInfo.GamesPlayed.First()}\n";
+                message += $"Games: **{streamInfo.GamesPlayed.First()}**\n";
             }
 
             var duration = DateTime.UtcNow - streamInfo.StreamStart;
-            message += $"Duration: {duration.Hours}h{duration.Minutes}m{duration.Seconds}s\n" +
-                       $"Viewers Average: {streamInfo.CalculateAverageViewers()} - High: {streamInfo.MaxViewers}\n" +
-                       $"Followers Session: {streamInfo.Followers - streamInfo.FollowersStart} - Total: {streamInfo.Followers}";
+            message += $"Duration: **{duration.Hours}h{duration.Minutes}m{duration.Seconds}s**\n" +
+                       $"Viewers Average: **{streamInfo.CalculateAverageViewers()}** - High: **{streamInfo.MaxViewers}**\n" +
+                       $"Followers Session: **{streamInfo.Followers - streamInfo.FollowersStart}** - Total: **{streamInfo.Followers}**";
 
             _discordClient.SendTextMessage(message);
         }
