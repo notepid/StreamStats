@@ -73,8 +73,9 @@ namespace StreamStats
 
         private void AnnounceStreamOnline(StreamInfo streamInfo, TwitchStream twitchStream)
         {
-            var message = $"@everyone ***{streamInfo.Name}*** is now live! {twitchStream.stream.channel.url}\n" +
-                          $"{twitchStream.stream.game} - {twitchStream.stream.channel.status}";
+            var message = $"@everyone ***{streamInfo.Name}*** is now live! {twitchStream.stream.game}\n" +
+                          $"{twitchStream.stream.channel.status}\n" +
+                          $"{twitchStream.stream.channel.url}";
             _announcementDiscordClient.SendTextMessage(message);
         }
 
