@@ -10,13 +10,15 @@ namespace StreamStats
     public class StreamChecker
     {
         private readonly TwitchClient _twitchClient;
-        private readonly DiscordClient _discordClient;
+        private readonly DiscordClient _announcementDiscordClient;
+        private readonly DiscordClient _statsDiscordClient;
         private readonly ILogger _logger;
 
-        public StreamChecker(TwitchClient twitchClient, DiscordClient discordClient, ILogger logger)
+        public StreamChecker(TwitchClient twitchClient, DiscordClient announcementDiscordClient, DiscordClient statsDiscordClient, ILogger logger)
         {
             _twitchClient = twitchClient;
-            _discordClient = discordClient;
+            _announcementDiscordClient = announcementDiscordClient;
+            _statsDiscordClient = statsDiscordClient;
             _logger = logger;
         }
 
@@ -71,8 +73,9 @@ namespace StreamStats
 
         private void AnnounceStreamOnline(StreamInfo streamInfo, TwitchStream twitchStream)
         {
-            var message = $"@everyone ***{streamInfo.Name}*** is now live! {twitchStream.stream.channel.url}";
-            _discordClient.SendTextMessage(message);
+            var message = $"@everyone ***{streamInfo.Name}*** is now live! {twitchStream.stream.channel.url}\n" +
+                          $"{twitchStream.stream.game} - {twitchStream.stream.channel.status}";
+            _announcementDiscordClient.SendTextMessage(message);
         }
 
         private void AnnounceStreamOffline(StreamInfo streamInfo)
@@ -94,7 +97,7 @@ namespace StreamStats
                        $"Viewers Average: **{streamInfo.CalculateAverageViewers()}** - High: **{streamInfo.MaxViewers}**\n" +
                        $"Followers Session: **{streamInfo.Followers - streamInfo.FollowersStart}** - Total: **{streamInfo.Followers}**";
 
-            _discordClient.SendTextMessage(message);
+            _statsDiscordClient.SendTextMessage(message);
         }
     }
 }

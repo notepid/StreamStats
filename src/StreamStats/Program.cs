@@ -25,7 +25,8 @@ namespace StreamStats
                 var discordmodel = JsonConvert.DeserializeObject<DiscordModel>(File.ReadAllText(@"discord.json"));
                 var twitchModel = JsonConvert.DeserializeObject<TwitchClientModel>(File.ReadAllText(@"twitch.json"));
 
-                var discordClient = new DiscordClient(discordmodel.WebhookUrl, _logger);
+                var announcementDiscordClient = new DiscordClient(discordmodel.AnnouncementWebhookUrl, _logger);
+                var statsDiscordClient = new DiscordClient(discordmodel.StatsWebhookUrl, _logger);
                 var twitchClient = new TwitchClient(twitchModel.ClientId, _logger);
 
                 if (!Directory.Exists("data"))
@@ -33,7 +34,7 @@ namespace StreamStats
                     Directory.CreateDirectory("data");
                 }
 
-                _streamChecker = new StreamChecker(twitchClient, discordClient, _logger);
+                _streamChecker = new StreamChecker(twitchClient, announcementDiscordClient, statsDiscordClient, _logger);
 
                 if (args.Any())
                 {

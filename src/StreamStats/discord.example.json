@@ -1,3 +1,4 @@
 ﻿{
-  "WebhookUrl": "https://discordapp.com/api/webhooks/123/abc"
+  "AnnouncementWebhookUrl": "https://discordapp.com/api/webhooks/123/abc",
+  "StatsWebhookUrl": "https://discordapp.com/api/webhooks/123/abc"
 }

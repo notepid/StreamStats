@@ -2,6 +2,7 @@
 {
     public class DiscordModel
     {
-        public string WebhookUrl { get; set; }
+        public string AnnouncementWebhookUrl { get; set; }
+        public string StatsWebhookUrl { get; set; }
     }
 }
