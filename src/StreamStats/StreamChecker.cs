@@ -27,7 +27,7 @@ namespace StreamStats
             var twitchStream = _twitchClient.GetStreamDetails(streamInfo.Name);
             if (twitchStream == null)
             {
-                _logger.Log($"Unable to fetch API data for {streamInfo.Name}");
+                _logger.Log(LoggingEventType.Error, $"Unable to fetch API data for {streamInfo.Name}");
                 return streamInfo;
             }
 
@@ -73,7 +73,8 @@ namespace StreamStats
 
         private void AnnounceStreamOnline(StreamInfo streamInfo, TwitchStream twitchStream)
         {
-            var message = $"@everyone ***{streamInfo.Name}*** is now live! {twitchStream.stream.game}\n" +
+            var message = $"@everyone ***{streamInfo.Name}*** is now live!\n" +
+                          $"{twitchStream.stream.game}\n" +
                           $"{twitchStream.stream.channel.status}\n" +
                           $"{twitchStream.stream.channel.url}";
             _announcementDiscordClient.SendTextMessage(message);
