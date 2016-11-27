@@ -87,7 +87,12 @@ namespace StreamStats
 
             if (streamInfo.GamesPlayed.Count > 1)
             {
-                message += $"Games: {streamInfo.GamesPlayed.Aggregate(message, (current, game) => current + $"**{game}** ")}\n";
+                var games = "Games:\n";
+                foreach (var game in streamInfo.GamesPlayed)
+                {
+                    message += $"**{game}**\n";
+                }
+                message += games;
             }
             else if (streamInfo.GamesPlayed.Count == 1)
             {
