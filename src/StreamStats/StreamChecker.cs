@@ -90,7 +90,7 @@ namespace StreamStats
                 var games = "Games:\n";
                 foreach (var game in streamInfo.GamesPlayed)
                 {
-                    message += $"**{game}**\n";
+                    games += $"**{game}**\n";
                 }
                 message += games;
             }
