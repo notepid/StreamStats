@@ -25,7 +25,7 @@ namespace StreamStats.Twitch
         {
             if (string.IsNullOrEmpty(streamName)) throw new ArgumentNullException(nameof(streamName));
 
-            var response = _client.GetAsync($"streams/{streamName}").Result;
+            var response = _client.GetAsync($"streams/{streamName}?stream_type=live").Result;
             try
             {
                 response.EnsureSuccessStatusCode();
