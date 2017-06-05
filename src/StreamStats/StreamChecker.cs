@@ -40,7 +40,12 @@ namespace StreamStats
 
                 AnnounceStreamOffline(streamInfo);
             }
-            else if (!streamInfo.Online && (twitchStream.stream != null)) //Was offline, now online
+            else if (twitchStream.stream != null && !twitchStream.stream.stream_type.Equals("live")) //online with VOD or some other stupid shit - Count this as offline
+            {
+                _logger.Log("\tOnline with VOD - Counts as offline");
+                streamInfo.Online = false;
+            }
+            else if (!streamInfo.Online && twitchStream.stream != null && twitchStream.stream.stream_type.Equals("live") ) //Was offline, now online
             {
                 _logger.Log("\tStream is now registered as online");
                 var name = streamInfo.Name;

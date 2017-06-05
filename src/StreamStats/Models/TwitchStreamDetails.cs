@@ -9,6 +9,7 @@ namespace StreamStats.Models
     public class TwitchStreamDetails
     {
         public string game { get; set; }
+        public string stream_type { get; set; }
         public int viewers { get; set; }
         public int delay { get; set; }
         public int video_height { get; set; }
