@@ -16,6 +16,7 @@ namespace StreamStats.Models
         public List<int> Viewers { get; set; } = new List<int>();
         public long FollowersStart { get; set; } = 0;
         public long Followers { get; set; } = 0;
+        public int OfflineChecksCount { get; set; } = 0;
 
         public int CalculateAverageViewers()
         {

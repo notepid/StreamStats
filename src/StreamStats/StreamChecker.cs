@@ -13,6 +13,7 @@ namespace StreamStats
         private readonly DiscordClient _announcementDiscordClient;
         private readonly DiscordClient _statsDiscordClient;
         private readonly ILogger _logger;
+        private const int NumOfflineChecks = 5;
 
         public StreamChecker(TwitchClient twitchClient, DiscordClient announcementDiscordClient, DiscordClient statsDiscordClient, ILogger logger)
         {
@@ -35,10 +36,19 @@ namespace StreamStats
 
             if (streamInfo.Online && (twitchStream.stream == null)) //Was online, now offline
             {
-                _logger.Log("\tStream is now registered as offline");
-                streamInfo.Online = false;
+                if (streamInfo.OfflineChecksCount >= NumOfflineChecks)
+                {
 
-                AnnounceStreamOffline(streamInfo);
+                    _logger.Log("\tStream is now registered as offline");
+                    streamInfo.Online = false;
+
+                    AnnounceStreamOffline(streamInfo);
+                }
+                else
+                {
+                    streamInfo.OfflineChecksCount++;
+                    _logger.Log($"\tTwitch API says stream is offline now, but will check again to be sure. {streamInfo.OfflineChecksCount} of {NumOfflineChecks} checks made.");
+                }
             }
             else if (twitchStream.stream != null && !twitchStream.stream.stream_type.Equals("live")) //online with VOD or some other stupid shit - Count this as offline
             {
@@ -54,7 +64,8 @@ namespace StreamStats
                     Online = true,
                     Name = name,
                     FollowersStart = twitchStream.stream.channel.followers,
-                    StreamStart = twitchStream.stream.created_at
+                    StreamStart = twitchStream.stream.created_at,
+                    OfflineChecksCount = 0
                 };
                 streamInfo.GamesPlayed.Add(twitchStream.stream.game);
 
@@ -62,10 +73,10 @@ namespace StreamStats
             }
             else
             {
-                if (!streamInfo.GamesPlayed.Contains(twitchStream.stream.game))
+                if (!streamInfo.GamesPlayed.Contains(twitchStream.stream.game)) //Streamer changed game
                     streamInfo.GamesPlayed.Add(twitchStream.stream.game);
-
-                if (twitchStream.stream.viewers > streamInfo.MaxViewers)
+                
+                if (twitchStream.stream.viewers > streamInfo.MaxViewers) //New peak viewer count
                     streamInfo.MaxViewers = twitchStream.stream.viewers;
 
                 streamInfo.Viewers.Add(twitchStream.stream.viewers);
