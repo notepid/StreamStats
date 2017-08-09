@@ -76,7 +76,7 @@ namespace StreamStats
         {
             foreach (var line in File.ReadAllLines("twitchusers.txt"))
             {
-                _logger.Log($"{DateTime.Now} Checking {line}");
+                _logger.Log($"Checking {line}");
                 var filename = Path.Combine("data", $"{line}_info.json");
 
                 var streamInfo = new StreamInfo();

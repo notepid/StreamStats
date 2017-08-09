@@ -73,8 +73,6 @@ namespace StreamStats
             }
             else
             {
-                _logger.Log("\tStream is online");
-
                 if (!streamInfo.GamesPlayed.Contains(twitchStream.stream.game)) //Streamer changed game
                     streamInfo.GamesPlayed.Add(twitchStream.stream.game);
                 
@@ -84,6 +82,8 @@ namespace StreamStats
                 streamInfo.Viewers.Add(twitchStream.stream.viewers);
                 streamInfo.Title = twitchStream.stream.channel.status;
                 streamInfo.Followers = twitchStream.stream.channel.followers;
+
+                _logger.Log($"\tOnline: {streamInfo.CalculateAverageViewers()} viewers. Game: {streamInfo.GamesPlayed.LastOrDefault()}");
             }
 
             return streamInfo;
