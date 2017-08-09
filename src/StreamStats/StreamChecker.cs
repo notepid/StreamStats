@@ -73,6 +73,8 @@ namespace StreamStats
             }
             else
             {
+                _logger.Log("\tStream is online");
+
                 if (!streamInfo.GamesPlayed.Contains(twitchStream.stream.game)) //Streamer changed game
                     streamInfo.GamesPlayed.Add(twitchStream.stream.game);
                 
