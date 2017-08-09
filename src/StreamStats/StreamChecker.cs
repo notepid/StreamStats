@@ -84,7 +84,7 @@ namespace StreamStats
                 streamInfo.Followers = twitchStream.stream.channel.followers;
                 streamInfo.OfflineChecksCount = 0;
 
-                _logger.Log($"\tOnline: {streamInfo.CalculateAverageViewers()} viewers. Game: {streamInfo.GamesPlayed.LastOrDefault()}");
+                _logger.Log($"\tOnline: {streamInfo.Viewers.LastOrDefault()} viewers. Game: {streamInfo.GamesPlayed.LastOrDefault()}");
             }
 
             return streamInfo;
